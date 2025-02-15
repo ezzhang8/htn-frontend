@@ -89,7 +89,7 @@ function EventsPage() {
             </ButtonGroup>
           </Box>
           {isMobile ? (
-            <Stack spacing={2}>
+            <Stack sx={{mt: 3}} spacing={2}>
               {events
                 .filter(
                   (event) => event.permission === "public" || user.logged_in
