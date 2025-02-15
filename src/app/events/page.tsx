@@ -38,7 +38,7 @@ function EventsPage() {
             Events
           </Typography>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <ButtonGroup variant="outlined" aria-label="Basic button group">
+            <ButtonGroup sx={{whiteSpace:"nowrap", }} variant="outlined" aria-label="Basic button group">
               <Button
                 onClick={() =>
                   setFilter({

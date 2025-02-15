@@ -122,7 +122,6 @@ export default function Navbar({ back }: NavbarProps) {
           ></Box>
           <Box
             sx={{
-              display: { xs: "none", md: "flex" },
               gap: 1,
               alignItems: "center",
             }}
