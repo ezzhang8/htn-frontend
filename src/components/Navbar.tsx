@@ -1,34 +1,52 @@
 "use client";
 
-import * as React from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Container from "@mui/material/Container";
-import Divider from "@mui/material/Divider";
-import MenuItem from "@mui/material/MenuItem";
-import Drawer from "@mui/material/Drawer";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { redirect } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
-
+import {
+  Box,
+  AppBar,
+  Toolbar,
+  Button,
+  Container,
+  Modal,
+  TextField,
+  Stack,
+  IconButton,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 const StyledToolbar = styled(Toolbar)(({}) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   flexShrink: 0,
-  padding: "8px 12px",
 }));
 
-export default function AppAppBar() {
-  const [open, setOpen] = React.useState(false);
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  pt: 2,
+  px: 4,
+  pb: 3,
+  outline: "none",
+  borderRadius: "20px",
+};
 
-  const toggleDrawer = (newOpen: boolean) => () => {
-    setOpen(newOpen);
-  };
+import { useAuth } from "@/components/auth/AuthContext";
+type NavbarProps = {
+  back?: boolean;
+};
+export default function Navbar({ back }: NavbarProps) {
+  const [open, setOpen] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const user = useAuth();
 
   return (
     <AppBar
@@ -41,42 +59,67 @@ export default function AppAppBar() {
         mt: "calc(var(--template-frame-height, 0px) + 28px)",
       }}
     >
-      <Container maxWidth="lg">
+      <Modal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+        aria-labelledby="parent-modal-title"
+        aria-describedby="parent-modal-description"
+      >
+        <Box sx={{ ...style, width: 400 }}>
+          <h2>Login</h2>
+          <Box
+            component="form"
+            onSubmit={() => {}}
+            sx={{ mb: 2, width: "100%", alignItems: "center" }}
+          >
+            <Stack spacing={1}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Username"
+                variant="standard"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <TextField
+                fullWidth
+                label="Password"
+                type="password"
+                size="small"
+                variant="standard"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Stack>
+          </Box>
+
+          <Button
+            type="submit"
+            fullWidth
+            onClick={() => {
+              user.login(username, password);
+            }}
+            variant="contained"
+            sx={{ mt: 2 }}
+          >
+            Login
+          </Button>
+        </Box>
+      </Modal>
+
+      <Container>
         <StyledToolbar variant="dense" disableGutters>
+          {back && (
+            <IconButton onClick={() => redirect("/events")} color="primary">
+              <ArrowBackIcon />
+            </IconButton>
+          )}
+
           <Box
             sx={{ flexGrow: 1, display: "flex", alignItems: "center", px: 0 }}
-          >
-            <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <Button variant="text" color="info" size="small">
-                Features
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Testimonials
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Highlights
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Pricing
-              </Button>
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                FAQ
-              </Button>
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                Blog
-              </Button>
-            </Box>
-          </Box>
+          ></Box>
           <Box
             sx={{
               display: { xs: "none", md: "flex" },
@@ -85,56 +128,16 @@ export default function AppAppBar() {
             }}
           >
             <ThemeToggle />
-
-            <Button color="primary" variant="contained" size="small">
-              Sign up
-            </Button>
-          </Box>
-          <Box sx={{ display: { xs: "flex", md: "none" }, gap: 1 }}>
-            <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
-              <MenuIcon />
-            </IconButton>
-            <Drawer
-              anchor="top"
-              open={open}
-              onClose={toggleDrawer(false)}
-              PaperProps={{
-                sx: {
-                  top: "var(--template-frame-height, 0px)",
-                },
-              }}
+            <Button
+              onClick={
+                user.logged_in ? () => user.logout() : () => setOpen(true)
+              }
+              color="primary"
+              variant="contained"
+              size="small"
             >
-              <Box sx={{ p: 2, backgroundColor: "background.default" }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <IconButton onClick={toggleDrawer(false)}>
-                    <CloseRoundedIcon />
-                  </IconButton>
-                </Box>
-
-                <MenuItem>Features</MenuItem>
-                <MenuItem>Testimonials</MenuItem>
-                <MenuItem>Highlights</MenuItem>
-                <MenuItem>Pricing</MenuItem>
-                <MenuItem>FAQ</MenuItem>
-                <MenuItem>Blog</MenuItem>
-                <Divider sx={{ my: 3 }} />
-                <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth>
-                    Sign up
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth>
-                    Sign in
-                  </Button>
-                </MenuItem>
-              </Box>
-            </Drawer>
+              {user.logged_in ? "Logout" : "Login"}
+            </Button>
           </Box>
         </StyledToolbar>
       </Container>

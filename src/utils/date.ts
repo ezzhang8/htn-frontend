@@ -19,3 +19,20 @@ export function formatWeekday(timestamp: number): string {
   const options: Intl.DateTimeFormatOptions = { weekday: 'long', timeZone: "America/New_York" };
   return date.toLocaleDateString('en-US', options);
 }
+
+export function formatTimeDifference(startTimestamp: number, endTimestamp: number) {
+  const diff = Math.abs(endTimestamp - startTimestamp)/1000;
+  const hours = Math.floor(diff / 3600);
+  const minutes = Math.floor((diff % 3600) / 60);
+
+  if (hours > 0 && minutes === 0) {
+    return `${hours} hour `;
+  }
+
+  if (hours > 0) {
+    return `${hours} hour ${minutes} min  `;
+  }
+  
+  return `${minutes} min `;
+
+}

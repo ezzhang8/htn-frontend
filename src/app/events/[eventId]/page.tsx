@@ -8,6 +8,9 @@ import {
   Container,
   Grid2 as Grid,
   Stack,
+  Box,
+  CardActions,
+  Button,
 } from "@mui/material";
 import { useParams } from "next/navigation";
 
@@ -17,20 +20,24 @@ import { useHTNEvents } from "@/utils/api";
 import Navbar from "@/components/Navbar";
 import { RelatedEvent } from "@/components/RelatedEvent";
 import { formatTimeRange, formatMonthDay } from "@/utils/date";
+import { useAuth } from "@/components/auth/AuthContext";
+import { redirect } from "next/navigation";
+
 export default function EventPage() {
-  const params = useParams(); // Get the dynamic route params
-  const eventId = params.eventId; // Extract eventId
+  const user = useAuth();
+  const params = useParams();
+  const eventId = params.eventId;
   const { events: event, loading } = useHTNEvents<TEvent>(
     parseInt(eventId as string)
   );
 
-  console.log(event);
-
   if (loading) return;
+  if (event.permission === "private" && !user.logged_in) redirect("/events");
 
   return (
     <>
-      <Navbar />
+      <Navbar back={true} />
+      <title>{event.name}</title>
       <Container>
         <Typography gutterBottom variant="h4" sx={{ fontWeight: "bold" }}>
           {event.name}
@@ -66,7 +73,9 @@ export default function EventPage() {
                   }}
                 >
                   Presented by{" "}
-                  {event.speakers.map((speaker, index) => (index > 0 ? " & " + speaker.name :  speaker.name) )}
+                  {event.speakers.map((speaker, index) =>
+                    index > 0 ? " & " + speaker.name : speaker.name
+                  )}
                 </Typography>
                 <Typography
                   variant="h6"
@@ -78,6 +87,28 @@ export default function EventPage() {
             <Typography sx={{ color: "text.secondary", mb: 1.5 }}></Typography>
             <Typography variant="body2">{event.description}</Typography>
           </CardContent>
+          <CardActions>
+            {event.public_url != "" && (
+              <Button
+                component="a"
+                target="_blank"
+                href={event.public_url}
+                size="small"
+              >
+                PUBLIC EVENT URL
+              </Button>
+            )}
+            {event.private_url != "" && user.logged_in && (
+              <Button
+                component="a"
+                target="_blank"
+                href={event.private_url}
+                size="small"
+              >
+                PRIVATE EVENT URL
+              </Button>
+            )}
+          </CardActions>
         </Card>
 
         <Typography variant="h5" sx={{ my: "25px", fontWeight: "bold" }}>
@@ -89,6 +120,7 @@ export default function EventPage() {
               return <RelatedEvent key={index} eventId={relatedEvent} />;
             })}
         </Stack>
+        <Box sx={{ my: "50px" }}></Box>
       </Container>
     </>
   );

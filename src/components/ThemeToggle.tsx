@@ -10,7 +10,7 @@ export default function ThemeToggle() {
   const { toggleTheme, mode } = useTheme();
 
   return (
-    <IconButton onClick={toggleTheme} color="inherit">
+    <IconButton sx={mode === "light" ? {color: "black"} : {color: "white"}} onClick={toggleTheme}>
       {mode === "light" ? <DarkModeIcon /> : <LightModeIcon />}
     </IconButton>
   );

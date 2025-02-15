@@ -75,7 +75,15 @@ export const getTheme = (mode: "light" | "dark") =>
           },
         },
       },
-
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: '20px', // Makes it rounded
+            boxShadow: 'none', // Removes shadow
+            textTransform: 'none', // Prevents uppercase text
+            cusror: 'pointer', // Changes cursor to pointer
+          },
+        },
+      },
     }
-
   });

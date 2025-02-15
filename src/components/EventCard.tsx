@@ -21,7 +21,7 @@ import TimelineDot from "@mui/lab/TimelineDot";
 import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
 
 import { TEvent } from "@/utils/types";
-import { formatTimeRange, formatMonthDay, formatWeekday } from "@/utils/date";
+import { formatTimeRange, formatMonthDay, formatWeekday, formatTimeDifference } from "@/utils/date";
 import { useTruncateText } from "@/utils/truncate";
 import { stringAvatar } from "@/utils/avatar";
 import { useMediaQuery } from "@mui/material";
@@ -65,7 +65,7 @@ export function EventInternalCard({ event }: EventCardProps) {
           <Typography sx={{ color: "text.secondary", mb: 1.5 }}>
             {truncatedDescription}
           </Typography>
-          <Typography variant="body2">{event.event_type}</Typography>
+          <Typography variant="body2">{formatTimeDifference(event.start_time, event.end_time) }{event.event_type.replace(/_/g, " ")}</Typography>
         </CardContent>
         </Link>
       </CardActionArea>
