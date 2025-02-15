@@ -1,40 +1,48 @@
-import React from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  Link
-} from '@mui/material';
-import EventCard from '@/components/EventCard';
+"use client";
+import React from "react";
+import { Typography, Box, Container, Stack } from "@mui/material";
+import EventCard from "@/components/EventCard";
+import Navbar from "@/components/Navbar";
+import { useHTNEvents } from "@/utils/api";
+import Timeline from "@mui/lab/Timeline";
+import { timelineOppositeContentClasses } from "@mui/lab/TimelineOppositeContent";
+import { useMediaQuery } from "@mui/material";
+import { TEvent } from "@/utils/types";
 
 function EventsPage() {
-
+  const { events } = useHTNEvents<TEvent[]>();
+  const isMobile = useMediaQuery("(max-width:500px)");
 
   return (
-    <Box>
-      {/* Top Navigation Bar */}
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+    <>
+      <Navbar />
+      <Container>
+        <Box sx={{ flexGrow: 1 }}>
+          <Typography gutterBottom variant="h4" sx={{ fontWeight: "bold" }}>
             Events
           </Typography>
-          {/* Additional Nav Items Could Go Here */}
-        </Toolbar>
-      </AppBar>
+          {isMobile? (<Stack spacing={2}>
 
-      {/* Main Content Area */}
-      <Box sx={{ p: 2, maxWidth: 900, mx: 'auto' }}>
-
-        {/* List of Events */}
-        <Box sx={{ mt: 2 }}>
-          {/* Example of a Single Event Card */}
-          <EventCard />
+            {events.map((event, index) => {
+              return <EventCard key={index} event={event} />;
+            })}
+          </Stack>) : (
+            <Timeline
+              position="right"
+              sx={{
+                [`& .${timelineOppositeContentClasses.root}`]: {
+                  flex: 0.1,
+                },
+              }}
+            >
+              {events.map((event, index) => {
+                return <EventCard key={index} event={event} />;
+              })}
+            </Timeline>
+          )}
         </Box>
-
-        {/* Footer or Additional Link */}
-      </Box>
-    </Box>
+      </Container>
+    </>
   );
 }
 
